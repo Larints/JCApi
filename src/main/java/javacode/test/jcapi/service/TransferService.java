@@ -1,13 +1,15 @@
 package javacode.test.jcapi.service;
 
+import jakarta.persistence.OptimisticLockException;
 import javacode.test.jcapi.DTO.TransferRequest;
 import javacode.test.jcapi.exceptions.AccountNotFoundException;
 import javacode.test.jcapi.model.Account;
 import javacode.test.jcapi.repository.AccountRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -35,9 +37,9 @@ public class TransferService implements TransferServiceInterface {
      * @throws IllegalStateException if the operation type is not supported
      * @throws AccountNotFoundException if there are insufficient funds for a withdrawal operation
      */
-    @Transactional
-    public Account transferMoney(UUID uuid, String operationType, BigDecimal amount) {
-        Account account = accountRepository.findById(uuid).orElseThrow(() -> new RuntimeException("Account not found"));
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Retryable(retryFor = OptimisticLockException.class, maxAttempts = 10)
+    public Account transferMoney(String operationType, BigDecimal amount, Account account) {
         TransferRequest.OperationType type;
         try {
             type = TransferRequest.OperationType.valueOf(operationType);

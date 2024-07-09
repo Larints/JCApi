@@ -27,9 +27,10 @@ public class AccountController {
      * @return the updated account information wrapped in a ResponseEntity
      */
     @PostMapping("/api/v1/wallet")
-    public CompletableFuture<ResponseEntity<Account>> transferMoney(@RequestBody TransferRequest request) {
-        return transferService.transferMoneyAsync(request.getUuid(), request.getOperationType().toString(),
-                request.getAmount()).thenApply(ResponseEntity::ok);
+    public ResponseEntity<Account> transferMoney(@RequestBody TransferRequest request) {
+        Account updatedAccount = transferService.transferMoney(request.getOperationType().toString(),
+                request.getAmount(), transferService.getAccount(request.getUuid()));
+        return ResponseEntity.ok(updatedAccount);
     }
 
     /**
