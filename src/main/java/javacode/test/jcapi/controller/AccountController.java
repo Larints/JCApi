@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @AllArgsConstructor
@@ -26,9 +27,9 @@ public class AccountController {
      * @return the updated account information wrapped in a ResponseEntity
      */
     @PostMapping("/api/v1/wallet")
-    public ResponseEntity<Account> transferMoney(@RequestBody TransferRequest request) {
-        Account updatedAccount = transferService.transferMoney(request.getUuid(), request.getOperationType().toString(), request.getAmount());
-        return ResponseEntity.ok(updatedAccount);
+    public CompletableFuture<ResponseEntity<Account>> transferMoney(@RequestBody TransferRequest request) {
+        return transferService.transferMoneyAsync(request.getUuid(), request.getOperationType().toString(),
+                request.getAmount()).thenApply(ResponseEntity::ok);
     }
 
     /**

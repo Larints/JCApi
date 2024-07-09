@@ -6,11 +6,13 @@ import javacode.test.jcapi.model.Account;
 import javacode.test.jcapi.repository.AccountRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /*
  * Service class for handling account transfer operations.
@@ -18,7 +20,7 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class TransferService {
+public class TransferService implements TransferServiceInterface {
 
     private final AccountRepository accountRepository;
 
@@ -51,6 +53,11 @@ public class TransferService {
         }
 
         return accountRepository.save(account);
+    }
+
+    @Async
+    public CompletableFuture<Account> transferMoneyAsync(UUID uuid, String operationType, BigDecimal amount) {
+        return CompletableFuture.completedFuture(transferMoney(uuid, operationType,amount ));
     }
 
     /**
