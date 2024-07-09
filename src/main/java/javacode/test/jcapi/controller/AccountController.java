@@ -27,7 +27,8 @@ public class AccountController {
      */
     @PostMapping("/api/v1/wallet")
     public ResponseEntity<Account> transferMoney(@RequestBody TransferRequest request) {
-        Account updatedAccount = transferService.transferMoney(request.getUuid(), request.getOperationType().toString(), request.getAmount());
+        Account updatedAccount = transferService.transferMoney(request.getOperationType().toString(),
+                request.getAmount(), transferService.getAccount(request.getUuid()));
         return ResponseEntity.ok(updatedAccount);
     }
 
