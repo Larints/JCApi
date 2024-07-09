@@ -29,7 +29,6 @@ public class TransferService implements TransferServiceInterface {
     /**
      * Transfers money to or from an account based on operation type and amount.
      *
-     * @param uuid         the UUID of the account involved in the transfer
      * @param operationType the type of operation (DEPOSIT or WITHDRAW)
      * @param amount       the amount to deposit or withdraw
      * @return the updated account information after the transfer
@@ -55,11 +54,6 @@ public class TransferService implements TransferServiceInterface {
         }
 
         return accountRepository.save(account);
-    }
-
-    @Async
-    public CompletableFuture<Account> transferMoneyAsync(UUID uuid, String operationType, BigDecimal amount) {
-        return CompletableFuture.completedFuture(transferMoney(uuid, operationType,amount ));
     }
 
     /**

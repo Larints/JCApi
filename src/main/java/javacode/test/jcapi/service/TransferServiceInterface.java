@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface TransferServiceInterface {
 
-    public Account transferMoney(UUID uuid, String operationType, BigDecimal amount);
+    public Account transferMoney(String operationType, BigDecimal amount, Account account);
 
     public Account getAccount(UUID uuid);
 

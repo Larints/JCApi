@@ -27,6 +27,4 @@ public class Account {
     @Column(nullable = false)
     private BigDecimal account;
 
-
-
 }
