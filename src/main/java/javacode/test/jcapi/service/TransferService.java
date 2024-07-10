@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -36,9 +37,9 @@ public class TransferService implements TransferServiceInterface {
      * @throws IllegalStateException if the operation type is not supported
      * @throws AccountNotFoundException if there are insufficient funds for a withdrawal operation
      */
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    @Retryable(retryFor = OptimisticLockException.class, maxAttempts = 10)
-    public Account transferMoney(String operationType, BigDecimal amount, Account account) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRES_NEW, timeout = 2)
+    public Account transferMoney(UUID uuid, String operationType, BigDecimal amount) {
+        Account account = this.getAccount(uuid);
         TransferRequest.OperationType type;
         try {
             type = TransferRequest.OperationType.valueOf(operationType);
